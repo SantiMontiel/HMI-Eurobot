@@ -1,0 +1,8 @@
+<launch>
+
+    <node   name = "Tester"      pkg = "Pantalla"
+            type = "Tester.py"   output = "screen" />
+    <node   name = "Display"     pkg = "Pantalla"
+            type = "Display.py"  output = "screen" />
+            
+</launch>
