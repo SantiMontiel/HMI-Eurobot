@@ -3,10 +3,14 @@
 
 import Tkinter as tk
 from PIL import Image, ImageTk
+import time
+
+import DisplayGUI
 
 import rospy
 from std_msgs.msg import Int32, String
 
+"""
 def callbackTime(msg):    
     print msg.data
     textVar = tk.StringVar()
@@ -63,17 +67,12 @@ def callbackButtonReset():
     global pubReset
     pubReset.publish(1)
     
+"""
 
 if __name__ == "__main__":
 
-    # Graphic window
-    window = tk.Tk()
-    window.title('Interfaz de robot. Eurobot 2021')
-    window.geometry("1280x720")
-
-    canvas = tk.Canvas(window, width = 1280, height = 720)
-    canvas.place(x = 0, y = 0, in_ = window)
-
+    # Graphic window  
+    """
     label1 = tk.Label(window, text = "Tiempo de juego: ")
     label1.place(x = 50, y = 50, in_ = window)
 
@@ -96,19 +95,24 @@ if __name__ == "__main__":
     path = "/home/santi/Ros_ws/src/Pantalla/src/"
     img = ImageTk.PhotoImage(Image.open(path + "wifi-true.png"))
     canvas.create_image(20, 20, image = img)
+    """
 
     # Node initialization
     rospy.init_node('Display')
 
     # Publications
-    pubReset    = rospy.Publisher('TestTopic6', Int32, queue_size = 32)
+    # pubReset    = rospy.Publisher('TestTopic6', Int32, queue_size = 32)
 
     # Suscriptions
+    """
     sub         = rospy.Subscriber('TestTopic', Int32, callback=callbackTime)
     subSide     = rospy.Subscriber('TestTopic2', String, callback = callbackSide)
     subWifi     = rospy.Subscriber('TestTopic3', String, callback = callbackWifi)
     subBatt     = rospy.Subscriber('TestTopic4', Int32, callback = callbackBatt)
     subMode     = rospy.Subscriber('TestTopic5', String, callback = callbackMode)
-
-    # Main loop
-    window.mainloop()
+    """
+    # Main loop (no mirar aux, es una juja temporal)
+    
+    root = tk.Tk()
+    app = DisplayGUI.Application(root)
+    app.mainloop()
