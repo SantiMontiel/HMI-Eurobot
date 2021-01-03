@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys 
-from PyQt5.QtCore    import Qt
+import sys, json
+from PyQt5.QtCore	 import Qt
 from PyQt5.QtGui	 import QIcon
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QWidget, QTabWidget, QHBoxLayout, QVBoxLayout, QLabel, QSlider, QLCDNumber, QComboBox, QCheckBox
 
@@ -78,6 +78,7 @@ class ParamTab(QWidget):
 		self.lLayout.addWidget(self.robotName)
 
 		self.robotBox1 = QRadioButton("Posavasos")
+		self.robotBox1.setChecked(True)
 		self.lLayout.addWidget(self.robotBox1)
 		self.robotBox2 = QRadioButton("Parejitas")
 		self.lLayout.addWidget(self.robotBox2)
@@ -140,12 +141,14 @@ class ParamTab(QWidget):
 		self.routinesCombo.addItem("Rutinas por definir")
 		self.lLayout.addWidget(self.routinesCombo)
 
-		# Botón de generar fichero (Left-bottom layout)
+		# Botones de generar fichero y clear (Left-bottom layout)
 		self.clearBtn = QPushButton("Reestablecer valores predeterminados")
 		self.clearBtn.setStyleSheet("background-color: #ff3f3f")
+		self.clearBtn.clicked.connect(self.clearField)
 		self.lbLayout.addWidget(self.clearBtn)
 		self.generateBtn = QPushButton("Generar fichero de configuración")
 		self.generateBtn.setStyleSheet("background-color: lightgreen")
+		self.generateBtn.clicked.connect(self.generateBtnClicked)
 		self.lbLayout.addWidget(self.generateBtn)
 
 		# ----- RIGHT LAYOUT: Empty
@@ -165,10 +168,52 @@ class ParamTab(QWidget):
 		self.labelPoseX.setText("Pose en X: " + str(self.sliderX.value()))
 		self.labelPoseY.setText("Pose en Y: " + str(self.sliderY.value()))
 
-	# TODO: def clearField(self):
+	def generateBtnClicked(self):
+		self.generateConfigFile()
 
-	# TODO: def generateFile(self):
+	def clearBtnClicked(self):
+		self.clearField()
+	
+	def generateConfigFile(self):
 
+		# 1. DATA COLLECTION
+		# 1.1. Robot name
+		if self.robotBox1.isChecked():
+			robot_name = "Posavasos"
+		elif self.robotBox2.isChecked():
+			robot_name = "Parejitas"
+		print(robot_name)
+
+		# 1.2. Pose
+		pose = [self.sliderX.value(), self.sliderY.value()]
+		print(pose)
+
+		# 1.3. Lado
+		side = str(self.sideCombo.currentText())
+		print(side)
+
+		# 1.4. Modo
+		mode = str(self.modeCombo.currentText())
+		print(mode)
+
+		# 1.5. Rutinas
+		routines = str(self.routinesCombo.currentText())
+		print(routines)
+		
+		# 2. GENERATE JSON FILE
+		json_dict = {	"robot_name": str(robot_name),
+						"pose": str(pose),
+						"side": str(side),
+						"mode": str(mode),
+						"routines": str(routines)}
+
+		with open("config/config.json", "w") as json_file:
+			json.dump(json_dict, json_file)
+
+	def clearField(self):
+		self.robotBox1.setChecked(True)
+		self.sliderX.setValue(0)
+		self.sliderY.setValue(0)
 
 
 class MapTab(QWidget):
