@@ -1,118 +1,223 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import Tkinter as tk
-from PIL import Image, ImageTk
-import time
+import sys 
+from PyQt5.QtCore    import Qt
+from PyQt5.QtGui	 import QIcon
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QWidget, QTabWidget, QHBoxLayout, QVBoxLayout, QLabel, QSlider, QLCDNumber, QComboBox, QCheckBox
 
-import DisplayGUI
+WIDTH = 1024
+HEIGHT = 600
 
-import rospy
-from std_msgs.msg import Int32, String
+# Creating the main window 
+class Application(QMainWindow): 
+	def __init__(self): 
+		super().__init__()
+		self.setWindowTitle('UAH Robotics Team - Eurobot 2021: Sail the World!') 
+		self.setGeometry(0, 0, WIDTH, HEIGHT) 
 
-"""
-def callbackTime(msg):    
-    print msg.data
-    textVar = tk.StringVar()
-    textVar.set(msg.data)
-    label = tk.Label(window, textvariable = textVar, bg = "green")
-    label.place(x = 190, y = 50, in_ = window)
+		self.tab_manager = TabManager(self) 
+		self.setCentralWidget(self.tab_manager) 
 
-def callbackSide(msg):
-    textVar2 = tk.StringVar()
-    textVar2.set(msg.data)
-    labelSide2 = tk.Label(window, textvariable = textVar2)
-    labelSide2.place(x = 190, y = 100, in_ = window)
+		self.show() 
 
-    if msg.data == "Azul":
-        canvas.create_oval(175, 102, 185, 112, fill = "#0000ff")
-    elif msg.data == "Amarillo":
-        canvas.create_oval(175, 102, 185, 112, fill = "#ffff00")
+# Creating tab widget
+class TabManager(QWidget): 
+	def __init__(self, parent): 
+		super(QWidget, self).__init__(parent) 
+		self.layout = QVBoxLayout(self) 
 
-def callbackWifi(msg):
-    textVar3 = tk.StringVar()
-    textVar3.set(msg.data)
-    labelWifi2 = tk.Label(window, textvariable = textVar3)
-    labelWifi2.place(x = 190, y = 125, in_ = window)
+		# Initialize tab screen 
+		self.tabM = QTabWidget()
+		self.tabM.resize(WIDTH, HEIGHT) 
 
-    if msg.data == "Sí":
-        canvas.create_oval(175, 127, 185, 137, fill = "#00ff00")
-    elif msg.data == "No":
-        canvas.create_oval(175, 127, 185, 137, fill = "#ff0000")
+		# Add tabs, choose icon and name
+		self.tabM.addTab(HomeTab(), QIcon("img/boat.png"),("Inicio")) 
+		self.tabM.addTab(ParamTab(), QIcon("img/compass.png"), ("Parámetros"))
+		self.tabM.addTab(MapTab(), QIcon("img/mountain.png"), ("Mapa")) 
+		self.tabM.addTab(CameraTab(), QIcon("img/camera.png"), ("Cámara")) 
+		self.tabM.addTab(PointsTab(), QIcon("img/crab.png"), ("Puntuación")) 
 
-def callbackBatt(msg):
-    textVar4 = tk.StringVar()
-    textVar4.set(msg.data)
-    labelBatt2 = tk.Label(window, textvariable = textVar4)
-    labelBatt2.place(x = 190, y = 150, in_ = window)
+		# Add tabs to widget 
+		self.layout.addWidget(self.tabM) 
+		self.setLayout(self.layout)
 
-    if msg.data >= 80:
-        canvas.create_oval(175, 152, 185, 162, fill = "#177615")
-    elif 80 > msg.data >= 60:
-        canvas.create_oval(175, 152, 185, 162, fill = "#00ff00")
-    elif 60 > msg.data >= 40:
-        canvas.create_oval(175, 152, 185, 162, fill = "#ffff00")
-    elif 40 > msg.data >= 20:
-        canvas.create_oval(175, 152, 185, 162, fill = "orange")
-    elif msg.data < 20:
-        canvas.create_oval(175, 152, 185, 162, fill = "red")
+class HomeTab(QWidget):
+	def __init__(self):
+		super().__init__()
 
-def callbackMode(msg):
-    textVar5 = tk.StringVar()
-    textVar5.set(msg.data)
-    labelMode2 = tk.Label(window, textvariable = textVar5)
-    labelMode2.place(x = 190, y = 75, in_ = window)
+		# START: Define layout
+		self.layout = QVBoxLayout()
 
-def callbackButtonReset():
-    global pubReset
-    pubReset.publish(1)
-    
-"""
+		# END: Set layout
+		self.setLayout(self.layout)
 
-if __name__ == "__main__":
+		
+class ParamTab(QWidget):
+	def __init__(self):
+		super().__init__()
 
-    # Graphic window  
-    """
-    label1 = tk.Label(window, text = "Tiempo de juego: ")
-    label1.place(x = 50, y = 50, in_ = window)
+		# START: Define layout
+		self.hLayout = QHBoxLayout()
+		self.lLayout = QVBoxLayout()
+		self.lbLayout = QHBoxLayout()
+		self.rLayout = QVBoxLayout()
 
-    labelMode1 = tk.Label(window, text = "Modo:")
-    labelMode1.place(x = 50, y = 75, in_ = window)
+		# --- TAB CONTENT
+		# ----- LEFT LAYOUT: Generación de fichero
 
-    labelSide1 = tk.Label(window, text = "Lado de juego:")
-    labelSide1.place(x = 50, y = 100, in_ = window)
+		# Title
+		self.genLabel = QLabel("Generador de ficheros de configuración")
+		self.genLabel.setAlignment(Qt.AlignCenter)
+		self.genLabel.setStyleSheet("background-color: #8673a1; font-weight: bold; color: white; border-radius: 10px;")
+		self.lLayout.addWidget(self.genLabel)
 
-    labelWifi1 = tk.Label(window, text = "Conexión WiFi:")
-    labelWifi1.place(x = 50, y = 125, in_ = window)
+		# Robot name: Parejitas o Posavasos
+		self.robotName = QLabel("Robot:")
+		self.robotName.setStyleSheet("font-weight: bold")		
+		self.lLayout.addWidget(self.robotName)
 
-    labelBatt1 = tk.Label(window, text = "Batería: ")
-    labelBatt1.place(x = 50, y = 150, in_ = window)
+		self.robotBox1 = QRadioButton("Posavasos")
+		self.lLayout.addWidget(self.robotBox1)
+		self.robotBox2 = QRadioButton("Parejitas")
+		self.lLayout.addWidget(self.robotBox2)
 
-    buttonReset = tk.Button(text = "Reset", command = callbackButtonReset)
-    buttonReset.place(x = 50, y = 175, in_ = window)
+		# Pose inicial: X e Y
+		self.poseLabel = QLabel("Posición inicial:")
+		self.poseLabel.setStyleSheet("font-weight: bold")
+		self.lLayout.addWidget(self.poseLabel)
 
-    # Imágenes
-    path = "/home/santi/Ros_ws/src/Pantalla/src/"
-    img = ImageTk.PhotoImage(Image.open(path + "wifi-true.png"))
-    canvas.create_image(20, 20, image = img)
-    """
+		self.labelPoseX = QLabel("Pose en X: 0")
+		self.lLayout.addWidget(self.labelPoseX)
 
-    # Node initialization
-    rospy.init_node('Display')
+		self.sliderX = QSlider(Qt.Horizontal)							# Create horizontal slider
+		self.sliderX.setMinimum(0)										# Minimum value
+		self.sliderX.setMaximum(300)									# Max value
+		self.sliderX.setValue(0)										# Initial value
+		self.sliderX.setTickPosition(QSlider.TicksBelow)				# Posición de los ticks
+		self.sliderX.setTickInterval(1)									# Intervalo entre los ticks
+		self.sliderX.valueChanged.connect(self.updatePose)				#
+		self.lLayout.addWidget(self.sliderX)							#
 
-    # Publications
-    # pubReset    = rospy.Publisher('TestTopic6', Int32, queue_size = 32)
+		self.labelPoseY = QLabel("Pose en Y: 0")
+		self.lLayout.addWidget(self.labelPoseY)
 
-    # Suscriptions
-    """
-    sub         = rospy.Subscriber('TestTopic', Int32, callback=callbackTime)
-    subSide     = rospy.Subscriber('TestTopic2', String, callback = callbackSide)
-    subWifi     = rospy.Subscriber('TestTopic3', String, callback = callbackWifi)
-    subBatt     = rospy.Subscriber('TestTopic4', Int32, callback = callbackBatt)
-    subMode     = rospy.Subscriber('TestTopic5', String, callback = callbackMode)
-    """
-    # Main loop (no mirar aux, es una juja temporal)
-    
-    root = tk.Tk()
-    app = DisplayGUI.Application(root)
-    app.mainloop()
+		self.sliderY = QSlider(Qt.Horizontal)
+		self.sliderY.setMinimum(0)
+		self.sliderY.setMaximum(300)
+		self.sliderY.setValue(0)
+		self.sliderY.setTickPosition(QSlider.TicksBelow)
+		self.sliderY.setTickInterval(1)
+		self.sliderY.valueChanged.connect(self.updatePose)
+		self.lLayout.addWidget(self.sliderY)
+
+		# Lado: azul o amarillo
+		self.sideLabel = QLabel("Lado inicial:")
+		self.sideLabel.setStyleSheet("font-weight: bold")
+		self.lLayout.addWidget(self.sideLabel)
+
+		self.sideCombo = QComboBox()
+		self.sideCombo.addItem("Azul")
+		self.sideCombo.addItem("Amarillo")
+		self.lLayout.addWidget(self.sideCombo)
+
+		# Modo: demo o competitivo
+		self.modeLabel = QLabel("Modo de funcionamiento:")
+		self.modeLabel.setStyleSheet("font-weight: bold")
+		self.lLayout.addWidget(self.modeLabel)
+
+		self.modeCombo = QComboBox()
+		self.modeCombo.addItem("Demo")
+		self.modeCombo.addItem("Competitivo")
+		self.lLayout.addWidget(self.modeCombo)
+
+		# Rutinas: por definir
+		self.routinesLabel = QLabel("Rutina a ejecutar:")
+		self.routinesLabel.setStyleSheet("font-weight: bold")
+		self.lLayout.addWidget(self.routinesLabel)
+
+		self.routinesCombo = QComboBox()
+		self.routinesCombo.addItem("Rutinas por definir")
+		self.lLayout.addWidget(self.routinesCombo)
+
+		# Botón de generar fichero (Left-bottom layout)
+		self.clearBtn = QPushButton("Reestablecer valores predeterminados")
+		self.clearBtn.setStyleSheet("background-color: #ff3f3f")
+		self.lbLayout.addWidget(self.clearBtn)
+		self.generateBtn = QPushButton("Generar fichero de configuración")
+		self.generateBtn.setStyleSheet("background-color: lightgreen")
+		self.lbLayout.addWidget(self.generateBtn)
+
+		# ----- RIGHT LAYOUT: Empty
+		self.exLabel = QLabel("Generador de rutinas (en progreso)")
+		self.exLabel.setAlignment(Qt.AlignCenter)
+		self.exLabel.setStyleSheet("background-color: #7f0000; font-weight: bold; color: white; border-radius: 10px;")
+		self.rLayout.addWidget(self.exLabel)
+
+		# END: Set layout
+		self.lLayout.addLayout(self.lbLayout)
+		self.hLayout.addLayout(self.lLayout, 5)
+		self.hLayout.addLayout(self.rLayout, 5)
+		self.setLayout(self.hLayout)
+
+	# FUNCTIONS
+	def updatePose(self, event):
+		self.labelPoseX.setText("Pose en X: " + str(self.sliderX.value()))
+		self.labelPoseY.setText("Pose en Y: " + str(self.sliderY.value()))
+
+	# TODO: def clearField(self):
+
+	# TODO: def generateFile(self):
+
+
+
+class MapTab(QWidget):
+	def __init__(self):
+		super().__init__()
+
+		# START: Define layout
+		self.layout = QVBoxLayout()
+
+		# Etiqueta wip
+		self.wip = QLabel("Work in progress!")		
+		self.layout.addWidget(self.wip)
+
+		# END: Set layout
+		self.setLayout(self.layout)
+
+
+class CameraTab(QWidget):
+	def __init__(self):
+		super().__init__()
+
+		# START: Define layout
+		self.layout = QVBoxLayout()
+
+		# Etiqueta wip
+		self.wip = QLabel("Work in progress!")		
+		self.layout.addWidget(self.wip)
+
+		# END: Set layout
+		self.setLayout(self.layout) 
+
+
+class PointsTab(QWidget):
+	def __init__(self):
+		super().__init__()
+
+		# START: Define layout
+		self.layout = QVBoxLayout()
+
+		# Etiqueta wip
+		self.wip = QLabel("Work in progress!")		
+		self.layout.addWidget(self.wip)
+
+		# END: Set layout
+		self.setLayout(self.layout)
+
+
+if __name__ == '__main__': 
+
+	app = QApplication(sys.argv) 
+	root = Application() 
+	sys.exit(app.exec_()) 

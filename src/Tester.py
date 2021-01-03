@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import random
 
 import rospy
 from std_msgs.msg import Int32, String
-
+"""
 def callbackSubReset(msg):
     global Side, count
 
@@ -51,3 +51,4 @@ while not rospy.is_shutdown():
 
     count += 1
     rate.sleep()
+"""
