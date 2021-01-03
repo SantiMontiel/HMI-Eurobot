@@ -214,7 +214,9 @@ class ParamTab(QWidget):
 		self.robotBox1.setChecked(True)
 		self.sliderX.setValue(0)
 		self.sliderY.setValue(0)
-
+		self.sideCombo.setCurrentIndex(0)
+		self.modeCombo.setCurrentIndex(0)
+		self.routinesCombo.setCurrentIndex(0)
 
 class MapTab(QWidget):
 	def __init__(self):
