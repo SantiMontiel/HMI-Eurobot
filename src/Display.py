@@ -4,7 +4,7 @@
 import sys, json
 from PyQt5.QtCore	 import Qt
 from PyQt5.QtGui	 import QIcon
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QWidget, QTabWidget, QHBoxLayout, QVBoxLayout, QLabel, QSlider, QLCDNumber, QComboBox, QCheckBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QWidget, QTabWidget, QHBoxLayout, QVBoxLayout, QLabel, QSlider, QLCDNumber, QComboBox, QCheckBox, QTableWidget, QTableWidgetItem, QLineEdit
 
 WIDTH = 1024
 HEIGHT = 600
@@ -62,6 +62,8 @@ class ParamTab(QWidget):
 		self.lLayout = QVBoxLayout()
 		self.lbLayout = QHBoxLayout()
 		self.rLayout = QVBoxLayout()
+		self.rtLayout = QHBoxLayout()
+
 
 		# --- TAB CONTENT
 		# ----- LEFT LAYOUT: Generación de fichero
@@ -151,14 +153,41 @@ class ParamTab(QWidget):
 		self.generateBtn.clicked.connect(self.generateBtnClicked)
 		self.lbLayout.addWidget(self.generateBtn)
 
-		# ----- RIGHT LAYOUT: Empty
+		# ----- RIGHT LAYOUT: Generador de rutinas + precarga de rutinas
 		self.exLabel = QLabel("Generador de rutinas (en progreso)")
 		self.exLabel.setAlignment(Qt.AlignCenter)
 		self.exLabel.setStyleSheet("background-color: #7f0000; font-weight: bold; color: white; border-radius: 10px;")
 		self.rLayout.addWidget(self.exLabel)
 
+		# -- RIGHT TOP LAYOUT (QHBoxLayout: QComboBox (rutina) + QLineEdit (atributo))
+		self.chooseRoutCombo = QComboBox()
+		self.chooseRoutCombo.addItem("avanzar")
+		self.chooseRoutCombo.addItem("coger vasos")
+		self.chooseRoutCombo.addItem("aparcar")
+		self.rtLayout.addWidget(self.chooseRoutCombo)
+
+		self.chooseAttrLine = QLineEdit()
+		self.rtLayout.addWidget(self.chooseAttrLine)
+
+		# Botón para agregar rutina
+		self.addRoutineBtn = QPushButton("Agregar rutina")
+		self.addRoutineBtn.clicked.connect(self.addRoutineBtnClicked)
+		self.rtLayout.addWidget(self.addRoutineBtn)
+
+		# Tabla de comandos para generar rutina
+		self.routTable = QTableWidget()
+		self.routTable.setFixedHeight(400)
+		self.index = 0
+		self.routTable.setRowCount(4)
+		self.routTable.setColumnCount(2)
+		self.routTable.setHorizontalHeaderLabels(('Rutina', 'Atributo'))
+		self.routTable.setColumnWidth(0, 334)
+		self.routTable.setColumnWidth(1, 120)
+		self.rLayout.addWidget(self.routTable)
+
 		# END: Set layout
 		self.lLayout.addLayout(self.lbLayout)
+		self.rLayout.addLayout(self.rtLayout)
 		self.hLayout.addLayout(self.lLayout, 5)
 		self.hLayout.addLayout(self.rLayout, 5)
 		self.setLayout(self.hLayout)
@@ -173,7 +202,10 @@ class ParamTab(QWidget):
 
 	def clearBtnClicked(self):
 		self.clearField()
-	
+
+	def addRoutineBtnClicked(self):
+		self.addRoutine()
+
 	def generateConfigFile(self):
 
 		# 1. DATA COLLECTION
@@ -217,6 +249,12 @@ class ParamTab(QWidget):
 		self.sideCombo.setCurrentIndex(0)
 		self.modeCombo.setCurrentIndex(0)
 		self.routinesCombo.setCurrentIndex(0)
+
+	def addRoutine(self):
+		self.routTable.setItem(self.index, 0, QTableWidgetItem(str(self.chooseRoutCombo.currentText())))
+		self.routTable.setItem(self.index, 1, QTableWidgetItem(str(self.chooseAttrLine.text())))
+		self.index += 1
+		print("Hola")
 
 class MapTab(QWidget):
 	def __init__(self):
