@@ -3,7 +3,7 @@
 
 import sys, json
 from PyQt5.QtCore	 import Qt
-from PyQt5.QtGui	 import QIcon
+from PyQt5.QtGui	 import QIcon, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QWidget, QTabWidget, QHBoxLayout, QVBoxLayout, QLabel, QSlider, QLCDNumber, QComboBox, QCheckBox, QTableWidget, QTableWidgetItem, QLineEdit
 
 WIDTH = 1024
@@ -72,6 +72,7 @@ class ParamTab(QWidget):
 		self.genLabel = QLabel("Generador de ficheros de configuración")
 		self.genLabel.setAlignment(Qt.AlignCenter)
 		self.genLabel.setStyleSheet("background-color: #8673a1; font-weight: bold; color: white; border-radius: 10px;")
+		self.genLabel.setMaximumHeight(30)
 		self.lLayout.addWidget(self.genLabel)
 
 		# Robot name: Parejitas o Posavasos
@@ -157,11 +158,13 @@ class ParamTab(QWidget):
 		self.exLabel = QLabel("Generador de rutinas (en progreso)")
 		self.exLabel.setAlignment(Qt.AlignCenter)
 		self.exLabel.setStyleSheet("background-color: #7f0000; font-weight: bold; color: white; border-radius: 10px;")
+		self.exLabel.setMaximumHeight(30)
 		self.rLayout.addWidget(self.exLabel)
 
 		# -- RIGHT TOP LAYOUT (QHBoxLayout: QComboBox (rutina) + QLineEdit (atributo))
 		self.chooseRoutCombo = QComboBox()
 		self.chooseRoutCombo.addItem("avanzar")
+		self.chooseRoutCombo.addItem("girar")
 		self.chooseRoutCombo.addItem("coger vasos")
 		self.chooseRoutCombo.addItem("aparcar")
 		self.rtLayout.addWidget(self.chooseRoutCombo)
@@ -173,21 +176,30 @@ class ParamTab(QWidget):
 		self.addRoutineBtn = QPushButton("Agregar rutina")
 		self.addRoutineBtn.clicked.connect(self.addRoutineBtnClicked)
 		self.rtLayout.addWidget(self.addRoutineBtn)
+		self.rLayout.addLayout(self.rtLayout)
 
 		# Tabla de comandos para generar rutina
 		self.routTable = QTableWidget()
 		self.routTable.setFixedHeight(400)
 		self.index = 0
-		self.routTable.setRowCount(4)
+		self.routTable.setRowCount(0)
 		self.routTable.setColumnCount(2)
 		self.routTable.setHorizontalHeaderLabels(('Rutina', 'Atributo'))
 		self.routTable.setColumnWidth(0, 334)
 		self.routTable.setColumnWidth(1, 120)
 		self.rLayout.addWidget(self.routTable)
 
+		# Imagen (test)
+		"""
+		self.imgSTW = QPixmap("img/SailTheWorld.png")
+		self.labelSTW = QLabel()
+		self.labelSTW.setPixmap(self.imgSTW)
+		self.labelSTW.resize(200, 200)
+		self.rLayout.addWidget(self.labelSTW)
+		"""
+		
 		# END: Set layout
 		self.lLayout.addLayout(self.lbLayout)
-		self.rLayout.addLayout(self.rtLayout)
 		self.hLayout.addLayout(self.lLayout, 5)
 		self.hLayout.addLayout(self.rLayout, 5)
 		self.setLayout(self.hLayout)
@@ -251,6 +263,7 @@ class ParamTab(QWidget):
 		self.routinesCombo.setCurrentIndex(0)
 
 	def addRoutine(self):
+		self.routTable.setRowCount(self.index + 1)
 		self.routTable.setItem(self.index, 0, QTableWidgetItem(str(self.chooseRoutCombo.currentText())))
 		self.routTable.setItem(self.index, 1, QTableWidgetItem(str(self.chooseAttrLine.text())))
 		self.index += 1
