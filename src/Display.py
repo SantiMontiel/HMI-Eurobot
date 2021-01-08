@@ -42,6 +42,10 @@ class TabManager(QWidget):
 		self.layout.addWidget(self.tabM) 
 		self.setLayout(self.layout)
 
+########################
+# -- PESTAÑA INICIO -- #
+########################
+
 class HomeTab(QWidget):
 	def __init__(self):
 		super().__init__()
@@ -52,6 +56,10 @@ class HomeTab(QWidget):
 		# END: Set layout
 		self.setLayout(self.layout)
 
+
+############################
+# -- PESTAÑA PARÁMETROS -- #
+############################
 		
 class ParamTab(QWidget):
 	def __init__(self):
@@ -63,6 +71,7 @@ class ParamTab(QWidget):
 		self.lbLayout = QHBoxLayout()
 		self.rLayout = QVBoxLayout()
 		self.rtLayout = QHBoxLayout()
+		self.rmLayout = QHBoxLayout()
 
 
 		# --- TAB CONTENT
@@ -147,7 +156,7 @@ class ParamTab(QWidget):
 		# Botones de generar fichero y clear (Left-bottom layout)
 		self.clearBtn = QPushButton("Reestablecer valores predeterminados")
 		self.clearBtn.setStyleSheet("background-color: #ff3f3f")
-		self.clearBtn.clicked.connect(self.clearField)
+		self.clearBtn.clicked.connect(self.clearBtnClicked)
 		self.lbLayout.addWidget(self.clearBtn)
 		self.generateBtn = QPushButton("Generar fichero de configuración")
 		self.generateBtn.setStyleSheet("background-color: lightgreen")
@@ -177,6 +186,19 @@ class ParamTab(QWidget):
 		self.addRoutineBtn.clicked.connect(self.addRoutineBtnClicked)
 		self.rtLayout.addWidget(self.addRoutineBtn)
 		self.rLayout.addLayout(self.rtLayout)
+
+		# ELIMINAR UNA RUTINA: QLabel + QLineEdit + QPushButton
+		self.delRoutLabel = QLabel("Eliminar rutina:")
+		self.rmLayout.addWidget(self.delRoutLabel)
+
+		self.delRoutLine = QLineEdit()
+		self.rmLayout.addWidget(self.delRoutLine)
+
+		self.delRoutButton = QPushButton("Borrar")
+		self.delRoutButton.setStyleSheet("background-color: #ff3f3f")
+		self.delRoutButton.clicked.connect(self.delRoutBtnClicked)
+		self.rmLayout.addWidget(self.delRoutButton)
+		self.rLayout.addLayout(self.rmLayout)
 
 		# Tabla de comandos para generar rutina
 		self.routTable = QTableWidget()
@@ -210,16 +232,6 @@ class ParamTab(QWidget):
 		self.labelPoseY.setText("Pose en Y: " + str(self.sliderY.value()))
 
 	def generateBtnClicked(self):
-		self.generateConfigFile()
-
-	def clearBtnClicked(self):
-		self.clearField()
-
-	def addRoutineBtnClicked(self):
-		self.addRoutine()
-
-	def generateConfigFile(self):
-
 		# 1. DATA COLLECTION
 		# 1.1. Robot name
 		if self.robotBox1.isChecked():
@@ -254,7 +266,7 @@ class ParamTab(QWidget):
 		with open("config/config.json", "w") as json_file:
 			json.dump(json_dict, json_file)
 
-	def clearField(self):
+	def clearBtnClicked(self):
 		self.robotBox1.setChecked(True)
 		self.sliderX.setValue(0)
 		self.sliderY.setValue(0)
@@ -262,12 +274,22 @@ class ParamTab(QWidget):
 		self.modeCombo.setCurrentIndex(0)
 		self.routinesCombo.setCurrentIndex(0)
 
-	def addRoutine(self):
+	def addRoutineBtnClicked(self):
 		self.routTable.setRowCount(self.index + 1)
 		self.routTable.setItem(self.index, 0, QTableWidgetItem(str(self.chooseRoutCombo.currentText())))
 		self.routTable.setItem(self.index, 1, QTableWidgetItem(str(self.chooseAttrLine.text())))
 		self.index += 1
-		print("Hola")
+
+	def delRoutBtnClicked(self):
+		self.row = int(self.delRoutLine.text())-1
+		self.routTable.removeRow(self.row)
+		self.index -= 1
+
+
+
+######################
+# -- PESTAÑA MAPA -- #
+######################
 
 class MapTab(QWidget):
 	def __init__(self):
@@ -284,6 +306,10 @@ class MapTab(QWidget):
 		self.setLayout(self.layout)
 
 
+########################
+# -- PESTAÑA CÁMARA -- #
+########################
+
 class CameraTab(QWidget):
 	def __init__(self):
 		super().__init__()
@@ -298,6 +324,10 @@ class CameraTab(QWidget):
 		# END: Set layout
 		self.setLayout(self.layout) 
 
+
+############################
+# -- PESTAÑA PUNTUACIÓN -- #
+############################
 
 class PointsTab(QWidget):
 	def __init__(self):
