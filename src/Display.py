@@ -9,6 +9,10 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton
 WIDTH = 1024
 HEIGHT = 600
 
+##########################
+# -- CLASE APLICACIÓN -- #
+##########################
+
 # Creating the main window 
 class Application(QMainWindow): 
 	def __init__(self): 
@@ -20,6 +24,10 @@ class Application(QMainWindow):
 		self.setCentralWidget(self.tab_manager) 
 
 		self.show() 
+
+############################
+# -- GESTOR DE PESTAÑAS -- #
+############################
 
 # Creating tab widget
 class TabManager(QWidget): 
@@ -151,6 +159,7 @@ class ParamTab(QWidget):
 
 		self.routinesCombo = QComboBox()
 		self.routinesCombo.addItem("Rutinas por definir")
+		self.routinesCombo.addItem("Importar desde el generador de rutinas")
 		self.lLayout.addWidget(self.routinesCombo)
 
 		# Botones de generar fichero y clear (Left-bottom layout)
@@ -253,7 +262,14 @@ class ParamTab(QWidget):
 		print(mode)
 
 		# 1.5. Rutinas
-		routines = str(self.routinesCombo.currentText())
+		if (str(self.routinesCombo.currentText()) == "Importar desde el generador de rutinas"):
+			routines = []
+			for i in range(0, self.index):
+				self.itemRout = self.routTable.item(i, 0)
+				self.attrRout = self.routTable.item(i, 1)
+				routines += [self.itemRout.text(), self.attrRout.text()]
+		else:
+			routines = str(self.routinesCombo.currentText())
 		print(routines)
 		
 		# 2. GENERATE JSON FILE
@@ -343,6 +359,10 @@ class PointsTab(QWidget):
 		# END: Set layout
 		self.setLayout(self.layout)
 
+
+#######################
+# -- MAIN FUNCTION -- #
+#######################
 
 if __name__ == '__main__': 
 
