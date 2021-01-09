@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import rospy
+from std_msgs.msg	 import Int32
+
 import sys, json
+
 from PyQt5.QtCore	 import Qt
 from PyQt5.QtGui	 import QIcon, QPixmap
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QRadioButton, QWidget, QTabWidget, QHBoxLayout, QVBoxLayout, QLabel, QSlider, QLCDNumber, QComboBox, QCheckBox, QTableWidget, QTableWidgetItem, QLineEdit
+from PyQt5.QtWidgets import *
 
 WIDTH = 1024
 HEIGHT = 600
@@ -349,15 +353,22 @@ class PointsTab(QWidget):
 	def __init__(self):
 		super().__init__()
 
+		# ROS Subscribers
+		self.subPoints = rospy.Subscriber("/points", Int32, callback = self.updatePoints)
+
 		# START: Define layout
 		self.layout = QVBoxLayout()
 
 		# Etiqueta wip
-		self.wip = QLabel("Work in progress!")		
-		self.layout.addWidget(self.wip)
+		self.lcdPoints = QLCDNumber()
+		self.layout.addWidget(self.lcdPoints)
 
 		# END: Set layout
 		self.setLayout(self.layout)
+
+	# ROS Callbacks
+	def updatePoints(self, msg):
+		self.lcdPoints.display(msg.data)
 
 
 #######################
@@ -368,4 +379,8 @@ if __name__ == '__main__':
 
 	app = QApplication(sys.argv) 
 	root = Application() 
+
+	rospy.init_node("Display")
+	rate = rospy.Rate(1)
+
 	sys.exit(app.exec_()) 
