@@ -1,1 +1,1 @@
-{"robot_name": "Posavasos", "pose": "[0, 0]", "side": "Azul", "mode": "Demo", "routines": "['avanzar', '-30']"}
+{"robot_name": "Parejitas", "pose": "[300, 150]", "side": "Amarillo", "mode": "Competitivo", "routines": "['avanzar', '90', 'girar', '45', 'coger vasos', '0', 'aparcar', '10']"}

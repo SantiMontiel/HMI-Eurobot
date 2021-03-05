@@ -283,7 +283,7 @@ class ParamTab(QWidget):
 						"mode": str(mode),
 						"routines": str(routines)}
 
-		with open("config/config.json", "w") as json_file:
+		with open("/home/santi/catkin_ws/src/Pantalla/src/config/config.json", "w") as json_file:
 			json.dump(json_dict, json_file)
 
 	def clearBtnClicked(self):
